@@ -1,5 +1,93 @@
 # AngularCommunication3
 
+## Comunicación a través del servicio.
+Finalmente, esta opción es útil y se debe utilizar cuando tenga un componente controlado o se pregunte su estado desde varias instancias.
+
+![alt text](https://cdn-images-1.medium.com/max/800/1*c7F8p2e1Q2O8sIAEB9Pf5Q.png)
+
+Ahora tenemos varios lugares en la aplicación que necesitarán acceder a nuestro componente de la barra lateral. A ver cómo lo hacemos.
+Ahora crearemos side-bar.service.ts por lo que tendremos:
+```
+side-bar.service.ts
+side-bar.component.ts
+side-bar.component.html
+```
+Los servicios de la barra lateral tendrán un método de alternar y un evento de cambio para que cada componente que inyecte este servicio pueda recibir una notificación de que el panel se abrió o puede activarlo.
+En este ejemplo, ni el componente de la barra lateral ni el componente de barra lateral tienen parámetros de entrada, ya que se comunican a través del servicio.
+Ahora el código:
+
+### app.component.html
+```html
+<app-side-bar-toggle></app-side-bar-toggle>
+<app-side-bar></app-side-bar>
+```
+### side-bar-toggle.component.ts
+```typescript
+@Component({
+  selector: 'app-side-bar-toggle',
+  templateUrl: './side-bar-toggle.component.html',
+  styleUrls: ['./side-bar-toggle.component.css']
+})
+export class SideBarToggleComponent {
+
+  constructor(
+    private sideBarService: SideBarService
+  ) { }
+
+  @HostListener('click')
+  click() {
+    this.sideBarService.toggle();
+  }
+}
+```
+### side-bar.component.ts
+```typescript
+@Component({
+  selector: 'app-side-bar',
+  templateUrl: './side-bar.component.html',
+  styleUrls: ['./side-bar.component.css']
+})
+export class SideBarComponent {
+
+  @HostBinding('class.is-open')
+  isOpen = false;
+
+  constructor(
+    private sideBarService: SideBarService
+  ) { }
+
+  ngOnInit() {
+    this.sideBarService.change.subscribe(isOpen => {
+      this.isOpen = isOpen;
+    });
+  }
+}
+```
+### side-bar.service.ts
+```typescript
+@Component({
+  selector: 'app-side-bar',
+  templateUrl: './side-bar.component.html',
+  styleUrls: ['./side-bar.component.css']
+})
+export class SideBarComponent {
+
+  @HostBinding('class.is-open')
+  isOpen = false;
+
+  constructor(
+    private sideBarService: SideBarService
+  ) { }
+
+  ngOnInit() {
+    this.sideBarService.change.subscribe(isOpen => {
+      this.isOpen = isOpen;
+    });
+  }
+}
+```
+Las importaciones se omiten en el código de TypeScript 
+
 Este proyecto se generó con [Angular CLI] (https://github.com/angular/angular-cli) versión 1.3.0.
 
 ## Development server
